@@ -12,6 +12,7 @@ public class Body {
     private int x;
     private int y;
     private int r;
+    private int state;
 
     public Canvas getCanvas() {
         return canvas;
@@ -53,15 +54,24 @@ public class Body {
         this.r = r;
     }
 
-    public Body(Canvas canvas, Paint paint, int x, int y, int r) {
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public Body(Canvas canvas, Paint paint, int x, int y, int r, int state) {
         this.canvas = canvas;
         this.paint = paint;
         this.x = x;
         this.y = y;
         this.r = r;
+        this.state = state;
     }
 
-    public void draw(){
-        canvas.drawCircle(x,y,r,paint);
+    public void draw() {
+        canvas.drawCircle(x, y, r, paint);
     }
 }

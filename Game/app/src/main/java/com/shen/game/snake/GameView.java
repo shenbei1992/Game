@@ -6,8 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +31,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     int x;//蛇头坐标
     int y;
 
+    Context context;
+
     public GameView(Context context) {
         super(context);
+        this.context = context;
         sfh = this.getHolder();
         sfh.addCallback(this);
 
         paint = new Paint();
+        paint.setAntiAlias(true);
         buttonUp = new Paint();
         buttonUp.setColor(Color.RED);
         buttonDown = new Paint();
@@ -67,6 +73,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bodyR = width / 54;
         x = width / 2;
         y = height / 2;
+        drawSnake();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -95,13 +102,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     List<JieDian> jieDianList = new ArrayList<JieDian>();
     List<Body> bodyList = new ArrayList<Body>();
+    int state = 1;
 
     public void myDraw() {
         canvas = sfh.lockCanvas();
         if (canvas != null) {
             canvas.drawRGB(255, 255, 255);
-            drawSnake();
-            new Snake(jieDianList, bodyList).draw();
+            new Snake(bodyList).draw();
 
             canvas.drawRect(width / 7 * 3, height - width / 7, width / 7 * 4, height, buttonDown);
             canvas.drawRect(width / 7 * 3, height - width / 7 * 3, width / 7 * 4, height - width / 7 * 2, buttonUp);
@@ -109,17 +116,74 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawRect(width / 7 * 2, height - width / 7 * 2, width / 7 * 3, height - width / 7, buttonLeft);
             sfh.unlockCanvasAndPost(canvas);
         }
-        y = y - bodyR * 2;
+
+        for (int i = 0; i < bodyList.size(); i++) {
+            if (bodyList.get(i).getState() == 1) {
+                bodyList.get(i).setY(bodyList.get(i).getY() - 2 * bodyR);//shang
+                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
+            } else if (bodyList.get(i).getState() == 2) {
+                bodyList.get(i).setY(bodyList.get(i).getY() + 2 * bodyR);//xia
+                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
+            } else if (bodyList.get(i).getState() == 3) {
+                bodyList.get(i).setX(bodyList.get(i).getX() - 2 * bodyR);//zuo
+                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
+            } else if (bodyList.get(i).getState() == 4) {
+                bodyList.get(i).setX(bodyList.get(i).getX() + 2 * bodyR);//you
+                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
+            }
+
+            if (i == 0) {
+                x = bodyList.get(i).getX();
+                y = bodyList.get(i).getY();
+            }
+        }
+
+    }
+
+    public int backState(int x, int y) {
+        for (int i = 0; i < jieDianList.size(); i++) {
+            if (x == jieDianList.get(i).getX() && y == jieDianList.get(i).getY()) {
+                state = jieDianList.get(i).getState();
+                break;
+            }
+        }
+        return state;
     }
 
     public void drawSnake() {
-        int xx = x;
-        int yy = y;
-        for (int i = 0; i < 4; i++) {
-            bodyList.add(new Body(canvas, paint, xx, yy, bodyR));
-            yy = yy - 2 * bodyR;
+        bodyList.clear();
+        canvas = sfh.lockCanvas();
+        if (canvas != null) {
+            for (int i = 0; i < 4; i++) {
+                bodyList.add(new Body(canvas, paint, x, y, bodyR, 1));
+                y = y - 2 * bodyR;
+            }
+            sfh.unlockCanvasAndPost(canvas);
         }
+    }
 
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
+                && height - width / 7 <= event.getY() && event.getY() <= height) {//下
+            //Toast.makeText(context, "xia", Toast.LENGTH_SHORT).show();
+
+        } else if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
+                && height - width / 7 * 3 <= event.getY() && event.getY() <= height - width / 7 * 2) {//shang
+            //Toast.makeText(context, "shang", Toast.LENGTH_SHORT).show();
+
+        } else if (width / 7 * 4 <= event.getX() && event.getX() <= width / 7 * 5
+                && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//you
+            jieDianList.add(new JieDian(x,y,4));
+            //Toast.makeText(context, "you", Toast.LENGTH_SHORT).show();
+
+        } else if (width / 7 * 2 <= event.getX() && event.getX() <= width / 7 * 3
+                && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//zuo
+            //Toast.makeText(context, "zuo", Toast.LENGTH_SHORT).show();
+
+        }
+        return true;
     }
 
 
