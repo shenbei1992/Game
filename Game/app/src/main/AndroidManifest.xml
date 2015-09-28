@@ -37,6 +37,10 @@
             android:name=".dazhuankuai.GameViewActivity"
             android:label="@string/title_activity_game_view" >
         </activity>
+        <activity
+            android:name=".snake.GameViewActivity"
+            android:label="@string/title_activity_game_view" >
+        </activity>
     </application>
 
 </manifest>

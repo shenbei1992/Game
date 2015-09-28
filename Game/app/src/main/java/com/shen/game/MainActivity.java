@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.*;
 
 import com.shen.game.dazhuankuai.GameViewActivity;
+import com.shen.game.snake.GameView;
 import com.shen.game.view.SlidingMenu;
 
 public class MainActivity extends Activity {
@@ -85,7 +86,7 @@ public class MainActivity extends Activity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MyView.class));
+                startActivity(new Intent(MainActivity.this, com.shen.game.snake.GameViewActivity.class));
             }
         });
         button4.setOnClickListener(new View.OnClickListener() {

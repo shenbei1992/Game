@@ -222,7 +222,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             setState();
             ball = new Ball(canvas, paint, x, y, 30);
             runWhere();
-            canvas.drawRect(gunX, heigth - 300, gunX + 300, heigth - 290, paint);
+            canvas.drawRect(gunX, heigth - 300, gunX + width/96, heigth - 290, paint);
             canvas.drawRect(0, heigth - 150, width / 2, heigth, button);
             canvas.drawRect(width / 2, heigth - 150, width, heigth, button1);
             sfh.unlockCanvasAndPost(canvas);
@@ -359,7 +359,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             if (gunX <= 0) {
 
             } else {
-                if (y + 30 == heigth - 300) {
+                if (y + 30 == heigth - width/96) {
                     if (x - 30 == 0) {
 
                     } else {
@@ -370,7 +370,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         if (clickX > width / 2 && clickY > heigth - 150) {
-            if (gunX + 300 >= width) {
+            if (gunX + width/96 >= width) {
 
             } else {
                 if (y + 30 == heigth - 300) {
