@@ -81,7 +81,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                     try {
                         Thread.sleep(1000);
                         myDraw();
-                        Log.e("shen", y + "");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -102,13 +101,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     List<JieDian> jieDianList = new ArrayList<JieDian>();
     List<Body> bodyList = new ArrayList<Body>();
-    int state = 1;
+    int state = 2;
 
     public void myDraw() {
         canvas = sfh.lockCanvas();
         if (canvas != null) {
             canvas.drawRGB(255, 255, 255);
-            new Snake(bodyList).draw();
+            for (Body body : bodyList) {
+                body.setState(backState(body.getX(), body.getY()));
+                body.draw();
+            }
 
             canvas.drawRect(width / 7 * 3, height - width / 7, width / 7 * 4, height, buttonDown);
             canvas.drawRect(width / 7 * 3, height - width / 7 * 3, width / 7 * 4, height - width / 7 * 2, buttonUp);
@@ -116,37 +118,37 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawRect(width / 7 * 2, height - width / 7 * 2, width / 7 * 3, height - width / 7, buttonLeft);
             sfh.unlockCanvasAndPost(canvas);
         }
-
         for (int i = 0; i < bodyList.size(); i++) {
             if (bodyList.get(i).getState() == 1) {
                 bodyList.get(i).setY(bodyList.get(i).getY() - 2 * bodyR);//shang
-                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
             } else if (bodyList.get(i).getState() == 2) {
                 bodyList.get(i).setY(bodyList.get(i).getY() + 2 * bodyR);//xia
-                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
             } else if (bodyList.get(i).getState() == 3) {
                 bodyList.get(i).setX(bodyList.get(i).getX() - 2 * bodyR);//zuo
-                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
             } else if (bodyList.get(i).getState() == 4) {
                 bodyList.get(i).setX(bodyList.get(i).getX() + 2 * bodyR);//you
-                bodyList.get(i).setState(backState(bodyList.get(i).getX(), bodyList.get(i).getY()));
             }
 
-            if (i == 0) {
-                x = bodyList.get(i).getX();
-                y = bodyList.get(i).getY();
-            }
+            x = bodyList.get(0).getX();
+            y = bodyList.get(0).getY();
+
         }
 
     }
 
-    public int backState(int x, int y) {
-        for (int i = 0; i < jieDianList.size(); i++) {
-            if (x == jieDianList.get(i).getX() && y == jieDianList.get(i).getY()) {
-                state = jieDianList.get(i).getState();
-                break;
+
+    public int backState(int xx, int yy) {
+        if (jieDianList.size()==0){
+
+        }else {
+            for (int i = 0; i < jieDianList.size(); i++) {
+                if (xx == jieDianList.get(i).getX() && yy == jieDianList.get(i).getY()) {
+                    state = jieDianList.get(i).getState();
+                    break;
+                }
             }
         }
+
         return state;
     }
 
@@ -154,8 +156,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bodyList.clear();
         canvas = sfh.lockCanvas();
         if (canvas != null) {
-            for (int i = 0; i < 4; i++) {
-                bodyList.add(new Body(canvas, paint, x, y, bodyR, 1));
+            for (int i = 0; i < 10; i++) {
+                bodyList.add(new Body(canvas, paint, x, y, bodyR, 0));
                 y = y - 2 * bodyR;
             }
             sfh.unlockCanvasAndPost(canvas);
@@ -165,23 +167,27 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
-                && height - width / 7 <= event.getY() && event.getY() <= height) {//下
-            //Toast.makeText(context, "xia", Toast.LENGTH_SHORT).show();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
+                    && height - width / 7 <= event.getY() && event.getY() <= height) {//下
+                //Toast.makeText(context, "xia", Toast.LENGTH_SHORT).show();
+                jieDianList.add(new JieDian(x + 2 * bodyR, y, 2));
 
-        } else if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
-                && height - width / 7 * 3 <= event.getY() && event.getY() <= height - width / 7 * 2) {//shang
-            //Toast.makeText(context, "shang", Toast.LENGTH_SHORT).show();
+            } else if (width / 7 * 3 <= event.getX() && event.getX() <= width / 7 * 4
+                    && height - width / 7 * 3 <= event.getY() && event.getY() <= height - width / 7 * 2) {//shang
+                //Toast.makeText(context, "shang", Toast.LENGTH_SHORT).show();
+                jieDianList.add(new JieDian(x + 2 * bodyR, y, 1));
 
-        } else if (width / 7 * 4 <= event.getX() && event.getX() <= width / 7 * 5
-                && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//you
-            jieDianList.add(new JieDian(x,y,4));
-            //Toast.makeText(context, "you", Toast.LENGTH_SHORT).show();
+            } else if (width / 7 * 4 <= event.getX() && event.getX() <= width / 7 * 5
+                    && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//you
+                jieDianList.add(new JieDian(x, y - 2 * bodyR, 4));
+                //Toast.makeText(context, "you", Toast.LENGTH_SHORT).show();
 
-        } else if (width / 7 * 2 <= event.getX() && event.getX() <= width / 7 * 3
-                && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//zuo
-            //Toast.makeText(context, "zuo", Toast.LENGTH_SHORT).show();
-
+            } else if (width / 7 * 2 <= event.getX() && event.getX() <= width / 7 * 3
+                    && height - width / 7 * 2 <= event.getY() && event.getY() <= height - width / 7) {//zuo
+                //Toast.makeText(context, "zuo", Toast.LENGTH_SHORT).show();
+                jieDianList.add(new JieDian(x, y - 2 * bodyR, 3));
+            }
         }
         return true;
     }
