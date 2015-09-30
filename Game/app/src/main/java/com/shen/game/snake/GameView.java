@@ -101,14 +101,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     List<JieDian> jieDianList = new ArrayList<JieDian>();
     List<Body> bodyList = new ArrayList<Body>();
-    int state = 2;
+    int state = 1;//蛇的初始运动状态
 
     public void myDraw() {
         canvas = sfh.lockCanvas();
         if (canvas != null) {
             canvas.drawRGB(255, 255, 255);
             for (Body body : bodyList) {
-                body.setState(backState(body.getX(), body.getY()));
+                body.setState(backState(body.getX(), body.getY(),body.getState()));
+                Log.e("shen",body.getState()+"");
                 body.draw();
             }
 
@@ -137,10 +138,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
 
-    public int backState(int xx, int yy) {
-        if (jieDianList.size()==0){
-
-        }else {
+    public int backState(int xx, int yy, int state) {
+        if (jieDianList.size() > 0) {
             for (int i = 0; i < jieDianList.size(); i++) {
                 if (xx == jieDianList.get(i).getX() && yy == jieDianList.get(i).getY()) {
                     state = jieDianList.get(i).getState();
@@ -156,8 +155,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         bodyList.clear();
         canvas = sfh.lockCanvas();
         if (canvas != null) {
-            for (int i = 0; i < 10; i++) {
-                bodyList.add(new Body(canvas, paint, x, y, bodyR, 0));
+            for (int i = 0; i < 8; i++) {
+                bodyList.add(new Body(canvas, paint, x, y, bodyR, state));
                 y = y - 2 * bodyR;
             }
             sfh.unlockCanvasAndPost(canvas);
