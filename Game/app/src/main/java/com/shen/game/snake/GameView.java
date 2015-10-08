@@ -76,6 +76,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         x = width / 2;
         y = height / 2;
         sudu = 2 * bodyR;
+        food();
         drawSnake();
         new Thread(new Runnable() {
             @Override
@@ -92,6 +93,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }).start();
     }
 
+    public void food() {
+        foodX = (int) (Math.random() * ((width - bodyR) + 1 - bodyR) + bodyR);
+        foodY = (int) (Math.random() * ((height - bodyR) + 1 - bodyR) + bodyR);
+    }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
@@ -106,6 +112,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     List<Body> bodyList = new ArrayList<Body>();
     int state = 1;//蛇的初始运动状态
     int sudu;//蛇的速度
+    int foodX;
+    int foodY;
 
     public void myDraw() {
         canvas = sfh.lockCanvas();
@@ -120,6 +128,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 bodyList.get(i).draw();
             }
 
+            if ((bodyList.get(0).getX() - foodX) * (bodyList.get(0).getX() - foodX)
+                    + (bodyList.get(0).getY() - foodY) * (bodyList.get(0).getY() - foodY) < 2 * bodyR * 2 * bodyR) {
+                food();
+                if (bodyList.get(bodyList.size() - 1).getState() == 1) {
+                    bodyList.add(new Body(canvas, paint, bodyList.get(bodyList.size() - 1).getX(), bodyList.get(bodyList.size() - 1).getY() + 2 * bodyR, bodyR, 1));
+                } else if (bodyList.get(bodyList.size() - 1).getState() == 2) {
+                    bodyList.add(new Body(canvas, paint, bodyList.get(bodyList.size() - 1).getX(), bodyList.get(bodyList.size() - 1).getY() - 2 * bodyR, bodyR, 2));
+                } else if (bodyList.get(bodyList.size() - 1).getState() == 3) {
+                    bodyList.add(new Body(canvas, paint, bodyList.get(bodyList.size() - 1).getX() + 2 * bodyR, bodyList.get(bodyList.size() - 1).getY(), bodyR, 3));
+                } else if (bodyList.get(bodyList.size() - 1).getState() == 4) {
+                    bodyList.add(new Body(canvas, paint, bodyList.get(bodyList.size() - 1).getX() - 2 * bodyR, bodyList.get(bodyList.size() - 1).getY(), bodyR, 4));
+                }
+            }
+            canvas.drawCircle(foodX, foodY, bodyR, paint);
             canvas.drawRect(width / 7 * 3, height - width / 7, width / 7 * 4, height, buttonDown);
             canvas.drawRect(width / 7 * 3, height - width / 7 * 3, width / 7 * 4, height - width / 7 * 2, buttonUp);
             canvas.drawRect(width / 7 * 4, height - width / 7 * 2, width / 7 * 5, height - width / 7, buttonRight);
@@ -128,25 +150,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
         for (int i = 0; i < bodyList.size(); i++) {
             if (bodyList.get(i).getState() == 1) {
-                if (bodyList.get(i).getY() - bodyR == 0) {
+                if (bodyList.get(i).getY() - bodyR <= 0) {
                     bodyList.get(i).setY(height - bodyR);
                 } else {
                     bodyList.get(i).setY(bodyList.get(i).getY() - sudu);//shang
                 }
             } else if (bodyList.get(i).getState() == 2) {
-                if (bodyList.get(i).getY() + bodyR == height) {
+                if (bodyList.get(i).getY() + bodyR >= height) {
                     bodyList.get(i).setY(bodyR);
                 } else {
                     bodyList.get(i).setY(bodyList.get(i).getY() + sudu);//xia
                 }
             } else if (bodyList.get(i).getState() == 3) {
-                if (bodyList.get(i).getX() - bodyR == 0) {
+                if (bodyList.get(i).getX() - bodyR <= 0) {
                     bodyList.get(i).setX(width - bodyR);
                 } else {
                     bodyList.get(i).setX(bodyList.get(i).getX() - sudu);//zuo
                 }
             } else if (bodyList.get(i).getState() == 4) {
-                if (bodyList.get(i).getX() + bodyR == width) {
+                if (bodyList.get(i).getX() + bodyR >= width) {
                     bodyList.get(i).setX(bodyR);
                 } else {
                     bodyList.get(i).setX(bodyList.get(i).getX() + sudu);//you
