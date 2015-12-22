@@ -8,4 +8,5 @@
     <string name="title_activity_my_surface_view">MySurfaceView</string>
     <string name="title_activity_text_view">TextView</string>
     <string name="title_activity_game_view">GameViewActivity</string>
+    <string name="title_activity_pao_game">PaoGameActivity</string>
 </resources>

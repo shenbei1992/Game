@@ -41,6 +41,14 @@
             android:name=".snake.GameViewActivity"
             android:label="@string/title_activity_game_view" >
         </activity>
+        <activity
+            android:name=".plane.GameViewActivity"
+            android:label="@string/title_activity_game_view" >
+        </activity>
+        <activity
+            android:name=".paopaolong.PaoGameActivity"
+            android:label="@string/title_activity_pao_game" >
+        </activity>
     </application>
 
 </manifest>
